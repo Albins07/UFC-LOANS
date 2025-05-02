@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>UFC – Equipment Check Out</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --primary: #004080;
+      --primary-dark: #003366;
+      --secondary: #f8f9fa;
+      --success: #28a745;
+      --danger: #dc3545;
+      --text: #333;
+      --border: #dee2e6;
+      --shadow: rgba(0, 0, 0, 0.1);
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--secondary);
+      color: var(--text);
+      line-height: 1.6;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .logo {
+      font-size: 32px;
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    .subtitle {
+      color: #666;
+      font-size: 16px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px var(--shadow);
+      padding: 25px;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    select, input, textarea {
+      width: 100%;
+      padding: 12px;
+      font-size: 15px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+
+    select:focus, input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0, 64, 128, 0.1);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    button {
+      padding: 14px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      background-color: var(--primary);
+      color: white;
+      transition: background-color 0.2s ease;
+      width: 100%; /* This makes the button fill its container */
+    }
+
+    button:hover {
+      background-color: var(--primary-dark);
+    }
+
+    .message {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 6px;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .success {
+      background-color: rgba(40, 167, 69, 0.1);
+      color: var(--success);
+      border: 1px solid rgba(40, 167, 69, 0.2);
+    }
+
+    .error {
+      background-color: rgba(220, 53, 69, 0.1);
+      color: var(--danger);
+      border: 1px solid rgba(220, 53, 69, 0.2);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .required {
+      color: var(--danger);
+      margin-left: 3px;
+    }
+
+    .date-display {
+      background-color: rgba(0, 64, 128, 0.05);
+      border-radius: 6px;
+      padding: 15px;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .date-display strong {
+      color: var(--primary);
+    }
+
+    .records-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    .records-table th {
+      background-color: var(--primary);
+      color: white;
+      padding: 10px;
+      text-align: left;
+    }
+
+    .records-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .records-table tr:nth-child(even) {
+      background-color: rgba(0, 64, 128, 0.03);
+    }
+
+    .action-buttons {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .secondary-button {
+      background-color: #6c757d;
+    }
+
+    .secondary-button:hover {
+      background-color: #5a6268;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">UFC</div>
+      <div class="subtitle">Equipment Check Out System</div>
+    </header>
+
+    <div class="card">
+      <form id="loanForm">
+        <div class="form-group">
+          <label for="item">Item <span class="required">*</span></label>
+          <select id="item" required>
+            <option value="">Select an item</option>
+            <option>iPad</option>
+            <option>A-frames (2)</option>
+            <option>Drink dispenser (2)</option>
+            <option>Round tablecloths (10)</option>
+            <option>Rectangle tablecloths (2)</option>
+            <option>Waterproof speaker</option>
+            <option>Food label 20 pcs mini chalkboard</option>
+            <option>4x6 acrylic frames</option>
+            <option>Large cart</option>
+            <option>Small cart</option>
+            <option>iPad stand</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="borrower">Borrowed by <span class="required">*</span></label>
+          <input type="text" id="borrower" required placeholder="Full name">
+        </div>
+
+        <div class="form-group">
+          <label for="dateOut">Check Out Date <span class="required">*</span></label>
+          <input type="date" id="dateOut" required>
+        </div>
+
+        <div class="form-group">
+          <label for="dateReturn">Return Date <span class="required">*</span></label>
+          <input type="date" id="dateReturn" required>
+        </div>
+
+        <div class="form-group">
+          <label for="notes">Notes</label>
+          <textarea id="notes" placeholder="Add any additional information..."></textarea>
+        </div>
+
+        <div style="text-align: center;">
+          <button type="submit">Submit Request</button>
+        </div>
+
+        <div id="dateDisplay" class="date-display hidden">
+          <p><strong id="itemDisplay"></strong> is checked out by <strong id="borrowerDisplay"></strong></p>
+          <p>From: <strong id="dateOutDisplay"></strong></p>
+          <p>To: <strong id="dateReturnDisplay"></strong></p>
+        </div>
+      </form>
+    </div>
+
+    <div id="message" class="message hidden"></div>
+
+    <div class="card" style="text-align: center;">
+      <h2 style="color: var(--primary); margin-bottom: 15px;">Current Check Outs</h2>
+      <div id="recentRecords">
+        <p style="text-align: center; color: #666;">No check-outs recorded yet.</p>
+      </div>
+      <div class="action-buttons">
+        <button id="exportBtn" class="secondary-button">Export to CSV</button>
+        <button id="clearBtn" class="secondary-button">Clear All Data</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const loanForm = document.getElementById('loanForm');
+      const dateOutInput = document.getElementById('dateOut');
+      const dateReturnInput = document.getElementById('dateReturn');
+      const message = document.getElementById('message');
+      const dateDisplay = document.getElementById('dateDisplay');
+      const exportBtn = document.getElementById('exportBtn');
+      const clearBtn = document.getElementById('clearBtn');
+
+      const today = new Date().toISOString().split('T')[0];
+      dateOutInput.min = today;
+
+      dateOutInput.addEventListener('change', () => {
+        dateReturnInput.min = dateOutInput.value;
+        if (dateReturnInput.value < dateOutInput.value) dateReturnInput.value = '';
+      });
+
+      function saveToLocalStorage(data) {
+        const records = JSON.parse(localStorage.getItem('ufcCheckouts') || '[]');
+        records.push(data);
+        localStorage.setItem('ufcCheckouts', JSON.stringify(records));
+      }
+
+      function loadRecords() {
+        const records = JSON.parse(localStorage.getItem('ufcCheckouts') || '[]');
+        const container = document.getElementById('recentRecords');
+        if (!records.length) {
+          container.innerHTML = '<p style="text-align: center; color: #666;">No check-outs recorded yet.</p>';
+          return;
+        }
+
+        let html = '<table class="records-table"><thead><tr><th>Item</th><th>Borrowed by</th><th>Out</th><th>Return</th></tr></thead><tbody>';
+        records.slice().reverse().slice(0, 10).forEach(record => {
+          html += `<tr><td>${record.item}</td><td>${record.borrower}</td><td>${record.dateOut}</td><td>${record.dateReturn}</td></tr>`;
+        });
+        html += '</tbody></table>';
+        if (records.length > 10) html += `<p style="text-align:center; color:#666;">Showing 10 of ${records.length} records</p>`;
+        container.innerHTML = html;
+      }
+
+      function showMessage(text, type = 'success') {
+        message.textContent = text;
+        message.className = `message ${type}`;
+        message.classList.remove('hidden');
+        setTimeout(() => message.classList.add('hidden'), 4000);
+      }
+
+      loanForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const item = document.getElementById('item').value;
+        const borrower = document.getElementById('borrower').value;
+        const dateOut = document.getElementById('dateOut').value;
+        const dateReturn = document.getElementById('dateReturn').value;
+        const notes = document.getElementById('notes').value;
+
+        const data = { item, borrower, dateOut, dateReturn, notes, timestamp: new Date().toISOString() };
+
+        saveToLocalStorage(data);
+        loadRecords();
+        loanForm.reset();
+        dateDisplay.classList.remove('hidden');
+        document.getElementById('itemDisplay').textContent = item;
+        document.getElementById('borrowerDisplay').textContent = borrower;
+        document.getElementById('dateOutDisplay').textContent = dateOut;
+        document.getElementById('dateReturnDisplay').textContent = dateReturn;
+        showMessage('✅ Check-out saved successfully!');
+      });
+
+      exportBtn.addEventListener('click', () => {
+        const records = JSON.parse(localStorage.getItem('ufcCheckouts') || '[]');
+        if (!records.length) return showMessage('No records to export.', 'error');
+        let csv = 'Item,Borrowed by,Check Out,Return,Notes,Timestamp\n';
+        records.forEach(r => {
+          csv += `"${r.item}","${r.borrower}","${r.dateOut}","${r.dateReturn}","${(r.notes || '').replace(/"/g, '""')}","${r.timestamp}"\n`;
+        });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'UFC_Equipment_Checkouts.csv';
+        link.click();
+        showMessage(`Exported ${records.length} records.`);
+      });
+
+      clearBtn.addEventListener('click', () => {
+        if (confirm('Clear all data? This cannot be undone.')) {
+          localStorage.removeItem('ufcCheckouts');
+          loadRecords();
+          showMessage('All data cleared.');
+        }
+      });
+
+      loadRecords();
+    });
+  </script>
+</body>
+</html>
