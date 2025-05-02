@@ -258,99 +258,64 @@
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const loanForm = document.getElementById('loanForm');
-      const dateOutInput = document.getElementById('dateOut');
-      const dateReturnInput = document.getElementById('dateReturn');
-      const message = document.getElementById('message');
-      const dateDisplay = document.getElementById('dateDisplay');
-      const exportBtn = document.getElementById('exportBtn');
-      const clearBtn = document.getElementById('clearBtn');
+  document.addEventListener('DOMContentLoaded', () => {
+    const loanForm = document.getElementById('loanForm');
+    const dateOutInput = document.getElementById('dateOut');
+    const dateReturnInput = document.getElementById('dateReturn');
+    const message = document.getElementById('message');
+    const dateDisplay = document.getElementById('dateDisplay');
 
-      const today = new Date().toISOString().split('T')[0];
-      dateOutInput.min = today;
+    const today = new Date().toISOString().split('T')[0];
+    dateOutInput.min = today;
 
-      dateOutInput.addEventListener('change', () => {
-        dateReturnInput.min = dateOutInput.value;
-        if (dateReturnInput.value < dateOutInput.value) dateReturnInput.value = '';
-      });
-
-      function saveToLocalStorage(data) {
-        const records = JSON.parse(localStorage.getItem('ufcCheckouts') || '[]');
-        records.push(data);
-        localStorage.setItem('ufcCheckouts', JSON.stringify(records));
-      }
-
-      function loadRecords() {
-        const records = JSON.parse(localStorage.getItem('ufcCheckouts') || '[]');
-        const container = document.getElementById('recentRecords');
-        if (!records.length) {
-          container.innerHTML = '<p style="text-align: center; color: #666;">No check-outs recorded yet.</p>';
-          return;
-        }
-
-        let html = '<table class="records-table"><thead><tr><th>Item</th><th>Borrowed by</th><th>Out</th><th>Return</th></tr></thead><tbody>';
-        records.slice().reverse().slice(0, 10).forEach(record => {
-          html += `<tr><td>${record.item}</td><td>${record.borrower}</td><td>${record.dateOut}</td><td>${record.dateReturn}</td></tr>`;
-        });
-        html += '</tbody></table>';
-        if (records.length > 10) html += `<p style="text-align:center; color:#666;">Showing 10 of ${records.length} records</p>`;
-        container.innerHTML = html;
-      }
-
-      function showMessage(text, type = 'success') {
-        message.textContent = text;
-        message.className = `message ${type}`;
-        message.classList.remove('hidden');
-        setTimeout(() => message.classList.add('hidden'), 4000);
-      }
-
-      loanForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const item = document.getElementById('item').value;
-        const borrower = document.getElementById('borrower').value;
-        const dateOut = document.getElementById('dateOut').value;
-        const dateReturn = document.getElementById('dateReturn').value;
-        const notes = document.getElementById('notes').value;
-
-        const data = { item, borrower, dateOut, dateReturn, notes, timestamp: new Date().toISOString() };
-
-        saveToLocalStorage(data);
-        loadRecords();
-        loanForm.reset();
-        dateDisplay.classList.remove('hidden');
-        document.getElementById('itemDisplay').textContent = item;
-        document.getElementById('borrowerDisplay').textContent = borrower;
-        document.getElementById('dateOutDisplay').textContent = dateOut;
-        document.getElementById('dateReturnDisplay').textContent = dateReturn;
-        showMessage('✅ Check-out saved successfully!');
-      });
-
-      exportBtn.addEventListener('click', () => {
-        const records = JSON.parse(localStorage.getItem('ufcCheckouts') || '[]');
-        if (!records.length) return showMessage('No records to export.', 'error');
-        let csv = 'Item,Borrowed by,Check Out,Return,Notes,Timestamp\n';
-        records.forEach(r => {
-          csv += `"${r.item}","${r.borrower}","${r.dateOut}","${r.dateReturn}","${(r.notes || '').replace(/"/g, '""')}","${r.timestamp}"\n`;
-        });
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = 'UFC_Equipment_Checkouts.csv';
-        link.click();
-        showMessage(`Exported ${records.length} records.`);
-      });
-
-      clearBtn.addEventListener('click', () => {
-        if (confirm('Clear all data? This cannot be undone.')) {
-          localStorage.removeItem('ufcCheckouts');
-          loadRecords();
-          showMessage('All data cleared.');
-        }
-      });
-
-      loadRecords();
+    dateOutInput.addEventListener('change', () => {
+      dateReturnInput.min = dateOutInput.value;
+      if (dateReturnInput.value < dateOutInput.value) dateReturnInput.value = '';
     });
+
+    function showMessage(text, type = 'success') {
+      message.textContent = text;
+      message.className = `message ${type}`;
+      message.classList.remove('hidden');
+      setTimeout(() => message.classList.add('hidden'), 4000);
+    }
+
+    loanForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const data = {
+        item: document.getElementById('item').value,
+        borrower: document.getElementById('borrower').value,
+        dateOut: document.getElementById('dateOut').value,
+        dateReturn: document.getElementById('dateReturn').value,
+        notes: document.getElementById('notes').value
+      };
+
+      fetch('https://script.google.com/macros/s/AKfycbw2MfJ7dK7pS7BaHMkWlBuSViZt7K0izeo9Oehp5caiD57EJ4kLnyAqWhoH89rv7pnyMQ/exec', {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: { 'Content-Type': 'application/json' }
+      })
+      .then(res => res.json())
+      .then(response => {
+        if (response.status === 'success') {
+          loanForm.reset();
+          dateDisplay.classList.remove('hidden');
+          document.getElementById('itemDisplay').textContent = data.item;
+          document.getElementById('borrowerDisplay').textContent = data.borrower;
+          document.getElementById('dateOutDisplay').textContent = data.dateOut;
+          document.getElementById('dateReturnDisplay').textContent = data.dateReturn;
+          showMessage('✅ Request submitted successfully!');
+        } else {
+          showMessage('Something went wrong!', 'error');
+        }
+      })
+      .catch(err => {
+        console.error('Error!', err.message);
+        showMessage('Submission failed. Please try again.', 'error');
+      });
+    });
+  });
   </script>
 </body>
 </html>
